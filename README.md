@@ -227,7 +227,8 @@ Can I use an AI tool with this project? **Yes you may**.
 GenAI is particularly good at tedious, repetitive production like code, templates,
 configuration files, and so forth. Furthermore, both CloudFormation and Terraform
 are well established templating frameworks used broadly across the community of
-software developers, DevOps engineers, Data Scientists, and others.
+software developers, DevOps engineers, Data Scientists, and others, and so AI
+output is likely to be more useful than not.
 
 Therefore I encourage the use of these tools, but it is clearly up to you to give
 guidance and to *thoroughly* test any results. I would suggest writing your own
