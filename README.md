@@ -1,2 +1,195 @@
-# ds5220-data-project-1
-DS5220 Data Project 1
+# DS5220 Data Project 1
+
+**All code for this project can be found in:** [https://github.com/uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection)
+
+---
+
+## Overview
+
+This project implements an **event-driven anomaly detection flow** on time series data. When a new batch of observations arrives (e.g., IoT sensor readings, server metrics, weather station data), the system runs an anomaly detection pass using scikit-learn’s **IsolationForest**, then writes back a scored version of the file where each row is annotated with an anomaly flag and a score.
+
+The instance maintains a **running statistical baseline** in S3 (a small JSON file, `baseline.json`, tracking rolling mean and standard deviation per sensor/channel), which it updates with each new batch. Detection improves over time through adaptive statistics without retraining, simulating stateful stream-like processing over batch files.
+
+---
+
+## CloudFormation Template
+
+You must create a **CloudFormation template** that provisions the entire solution. A single template must include the following:
+
+### EC2 instance
+- **AMI:** Ubuntu 24.04 LTS
+- **Instance type:** `t3.micro`
+- **Boot volume:** 16 GB
+- **User data / bootstrap:** Install and configure the application so that:
+  - The necessary Python libraries (from the repo’s `requirements.txt`) are installed
+  - The global environment variable `BUCKET_NAME` is set (e.g., in `/etc/environment`) to the name of the S3 bucket created by this stack
+  - A command is in place to run the FastAPI API (e.g., `fastapi run app.py` or equivalent) so the service starts on boot or via a process manager
+
+### Security group
+- Allow **port 22** (SSH) from anywhere (`0.0.0.0/0`)
+- Allow **port 8000** (API) from anywhere (`0.0.0.0/0`)
+- Attach this security group to the EC2 instance
+
+### Elastic IP
+- Create an **Elastic IP** and **attach it to the EC2 instance** so the instance has a stable public IP for the SNS subscription endpoint.
+
+### S3 bucket
+- Create a **new S3 bucket** (name can be parameterized or generated). This is the bucket the application will use for raw uploads, processed output, state, and logs.
+
+### IAM role and policy
+- Create an **IAM instance profile** (role) attached to the EC2 instance.
+- The role must have an **IAM policy** that grants **full access** (read/write/delete/list) to **that single S3 bucket only** (no other resources).
+
+### SNS topic and subscription
+- Create an **SNS topic** named **`ds5220-dp1`**.
+- Create an **SNS subscription**:
+  - **Protocol:** HTTP
+  - **Endpoint:** The Elastic IP of the instance, port 8000, path `/notify` — e.g. `http://<Elastic-IP>:8000/notify`
+  - The subscription must reference the instance’s Elastic IP (use CloudFormation refs/attributes so the endpoint is correct after stack creation).
+
+### S3 event trigger
+- Configure an **S3 event notification** on the bucket that:
+  - **Prefix:** `raw/`
+  - **Suffix:** `*.csv` (or equivalent filter for CSV objects in `raw/`)
+  - **Destination:** Publish each event to the **SNS topic** `ds5220-dp1`
+
+When a CSV file is uploaded to the bucket under `raw/`, S3 notifies SNS, and SNS sends an HTTP request to `http://<Elastic-IP>:8000/notify`, which the FastAPI app uses to trigger processing.
+
+You may want/need to build and destroy some instances along the way for testing purposes.
+
+---
+
+## Setup
+
+1. **Fork the repository**  
+   Fork [uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection) so you have your own copy to work with. 
+
+2. **Bootstrap the instance**  
+   Ensure `BUCKET_NAME` is set as a global environment variable (e.g., add `KEY="VALUE"` to `/etc/environment`). The application requires an S3 bucket and an IAM role with read/write access to that bucket; it will not run without them. Bootstrapping should include pulling down a copy of your forked code.
+
+3. **Python environment**  
+   - Create and activate a virtual environment (`virtualenv`, `pipenv`, etc.).
+   - Install dependencies from `requirements.txt`.
+   - From the directory containing `app.py`, run:
+     ```bash
+     fastapi run app.py --reload
+     ```
+   The API will be available at `http://YOUR-EC2-IP-ADDRESS:8000/`.
+
+---
+
+## Code Structure
+
+These modules support the detection pipeline and are imported or invoked by the main API:
+
+| File           | Role |
+|----------------|------|
+| `baseline.py`  | Maintains and updates per-channel rolling statistics (mean, std) in `baseline.json`; state is synced to `s3://BUCKET_NAME/state/baseline.json`. |
+| `detector.py`  | Runs anomaly detection (IsolationForest) on incoming data and produces anomaly flags and scores. |
+| `processor.py` | Orchestrates reading data, calling the detector, and writing scored output. |
+
+Read through these files to understand the end-to-end flow.
+
+---
+
+## API Endpoints
+
+The service is a **FastAPI** application in `app.py` with five endpoints:
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| **POST** | `/notify` | Receives SNS messages; handles subscription confirmation and dispatches incoming S3 object keys to `process_file` as a background task. **Use this endpoint for your SNS subscription.** |
+| **GET**  | `/anomalies/recent` | Scans the 10 most recent processed CSVs and returns rows where `anomaly == True`, with an optional `limit` query parameter. |
+| **GET**  | `/anomalies/summary` | Aggregates `_summary.json` files for a high-level view: total rows scored, total anomalies, and overall anomaly rate across batches. |
+| **GET**  | `/baseline/current` | Returns the current per-channel statistics (mean, std, observation count, baseline maturity). |
+| **GET**  | `/health` | Liveness check to confirm the service started correctly. |
+
+---
+
+## Logging
+
+- Implement **logging to a local file**.
+- **Sync a copy of that log file to your S3 bucket** whenever your application pushes `baseline.json`.
+- Log important events, for example:
+  - Arrival of a new file
+  - New calculations
+  - Baseline updates
+
+This keeps a single application log file backed up from the EC2 instance to S3.
+
+---
+
+## Testing
+
+- A test script **`test_producer.py`** is provided. Run it on your laptop or from another SSH session on your instance (it has its own dependencies).
+- It produces a CSV with 100 records every 60 seconds and uploads them to your S3 bucket under a `raw/` folder.
+- A sample file is available in the repository for reference.
+
+Once you have successfully tested your solution to a working state, let it run unattended for 60 minutes.
+
+You should then copy two files from your bucket to your forked repository
+
+1. A copy of your full log file should be saved to the `submit/` directory of your fork.
+2. A copy of your final baseline file (found in `s3://YOUR_BUCKET/state/baseline.json`) should be saved in the same location.
+
+---
+
+## Summary of Deliverables
+
+
+### All Students
+
+- **CloudFormation template** that builds the full solution (EC2, security group, Elastic IP, S3 bucket, IAM role, SNS topic `ds5220-dp1`, SNS HTTP subscription to `http://<Elastic-IP>:8000/notify`, S3 event on `raw/*.csv` → SNS). This file should be saved to the `submit/` folder of your forked repository.
+- A copy of your `baseline.json` file should be saved in the same directory.
+- A copy of your full log file should be saved to the same directory.
+- Submit the URL to your fork of the `anomaly-detection` repo in Canvas.
+
+
+### Graduate Students
+
+In addition to the above requirements:
+
+- A complete working template of this solution written in Terraform. Add this to the `submit/` directory of your fork.
+- You should run your solution to be sure it is in good working order, but you do not need to submit additional baseline or log files.
+- Submit your answers to the following questions in a markdown or PDF file in the same folder of your forked repository.
+
+**Questions**
+
+1. **Technical Challenges** Describe the greatest challenge(s) you encountered in translating the template from CloudFormation to Terraform. (1-2 paragraphs)
+2. **Access Permissions** What element (specify file and line #) grants the SNS subscription permission to send messages to your API? Locate and explain your answer.
+3. **Event flow and reliability:** Trace the path of a single CSV file from the moment it is uploaded to `raw/` in S3 until the FastAPI app processes it. What happens if the EC2 instance is down or the `/notify` endpoint returns an error? How does SNS behave (e.g., retries, dead-letter behavior), and what would you change if this needed to be production-grade?
+4. **IAM and least privilege:** The IAM policy for the EC2 instance grants full access to one S3 bucket. List the specific S3 operations the application actually performs (e.g., GetObject, PutObject, ListBucket). Could you replace the “full access” policy with a minimal set of permissions that still allows the app to work? What would that policy look like?
+5. **Architecture and scaling:** This solution uses batch-file events (S3 + SNS) to drive processing, with a rolling statistical baseline in memory and in S3. How would the design change if you needed to handle 100x more CSV files per hour, or if multiple EC2 instances were processing files from the same bucket? Address consistency of the shared `baseline.json`, concurrent processing, and any tradeoffs.
+
+- - -
+
+For full working code and file listings, see: [https://github.com/uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection).
+
+For a complete **CloudFormation** reference, see: [https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/introduction.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/introduction.html)
+
+For a complete **Terraform** reference, see: [https://developer.hashicorp.com/terraform/docs](https://developer.hashicorp.com/terraform/docs)
+
+
+## Additional Notes on Bootstrapping with Virtual Environments
+
+```
+#!/bin/bash
+set -e
+
+# Update and install Python + pip
+apt-get update -y
+apt-get install -y git python3 python3-pip python3-venv git
+
+cd /opt
+git clone https://github.com/YOUR-ACCOUNT/anomaly-detection.git
+cd anomaly-detection
+# Create a virtualenv in a known location
+python3 -m venv /opt/anomaly-detection/venv
+
+# Activate and install deps
+source /opt/anomaly-detection/venv/bin/activate
+/opt/anomaly-detection/venv/bin/pip install -r /opt/anomaly-detection/requirements.txt
+
+# The app.py FastAPI app can be run using full paths if necessary, even from outside the virtualenv:
+/opt/anomaly-detection/venv/bin/fastapi run /opt/anomaly-detection/app.py --reload
+```
