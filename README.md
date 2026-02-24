@@ -48,7 +48,7 @@ You must create a **CloudFormation template** that provisions the entire solutio
   - **Endpoint:** The Elastic IP of the instance, port 8000, path `/notify` — e.g. `http://<Elastic-IP>:8000/notify`
   - The subscription must reference the instance’s Elastic IP (use CloudFormation refs/attributes so the endpoint is correct after stack creation).
 
-### S3 event trigger
+### S3 event notification
 - Configure an **S3 event notification** on the bucket that:
   - **Prefix:** `raw/`
   - **Suffix:** `*.csv` (or equivalent filter for CSV objects in `raw/`)
@@ -143,7 +143,7 @@ You should then copy two files from your bucket to your forked repository
 
 ### All Students
 
-- **CloudFormation template** that builds the full solution (EC2, security group, Elastic IP, S3 bucket, IAM role, SNS topic `ds5220-dp1`, SNS HTTP subscription to `http://<Elastic-IP>:8000/notify`, S3 event on `raw/*.csv` → SNS). This file should be saved to the `submit/` folder of your forked repository.
+- **CloudFormation template** that builds the full solution (EC2, security group, Elastic IP, S3 bucket, IAM role, SNS topic `ds5220-dp1`, SNS HTTP subscription to `http://<Elastic-IP>:8000/notify`, S3 event notification on `raw/*.csv` → SNS). This file should be saved to the `submit/` folder of your forked repository.
 - A copy of your `baseline.json` file should be saved in the same directory.
 - A copy of your full log file should be saved to the same directory.
 - Submit the URL to your fork of the `anomaly-detection` repo in Canvas.
