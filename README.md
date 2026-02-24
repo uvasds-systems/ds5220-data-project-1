@@ -168,12 +168,10 @@ In addition to the above requirements:
 
 ## Reference 
 
-For full working code and file listings, see: [https://github.com/uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection).
-
-For a complete **CloudFormation** reference, see: [https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/introduction.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/introduction.html)
-
-For a complete **Terraform** reference, see: [https://developer.hashicorp.com/terraform/docs](https://developer.hashicorp.com/terraform/docs)
-
+- Full working code and files: [https://github.com/uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection).
+- **CloudFormation** reference: [https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/introduction.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/introduction.html)
+- **Terraform** reference: [https://developer.hashicorp.com/terraform/docs](https://developer.hashicorp.com/terraform/docs)
+- **FastAPI** reference: [https://fastapi.tiangolo.com/](https://fastapi.tiangolo.com/)
 
 ## Notes
 
