@@ -62,13 +62,16 @@ You may want/need to build and destroy some instances along the way for testing 
 ## Setup
 
 1. **Fork the repository**  
-   Fork [uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection) so you have your own copy to work with. 
+   Fork [uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection) so you have your own copy to work with. Get your code in a working state that is ready to deploy.
 
-2. **Bootstrap the instance**  
-   Ensure `BUCKET_NAME` is set as a global environment variable (e.g., add `KEY="VALUE"` to `/etc/environment`). The application requires an S3 bucket and an IAM role with read/write access to that bucket; it will not run without them. Bootstrapping should include pulling down a copy of your forked code.
+2. **Launch your Resources**
+   Create a stack with all the resources described above, connecting resources where required, i.e. associate the EIP with your instance, connect your S3 bucket's event triggers with the SNS topic, etc.
 
-3. **Python environment**  
-   - Create and activate a virtual environment (`virtualenv`, `pipenv`, etc.).
+3. **Bootstrap the instance**  
+   Within the template, bootstrap your instance with any required software and configuration. Ensure that `BUCKET_NAME` is set as a global environment variable (e.g., add `KEY="VALUE"` to `/etc/environment`). The application requires an S3 bucket and an IAM role with read/write access to that bucket; it will not run without them. Bootstrapping should also include pulling down a copy of your forked code.
+
+4. **Python environment**  
+   - Create and activate a virtual environment (`virtualenv`, `pipenv`, etc.) for your code to run properly.
    - Install dependencies from `requirements.txt`.
    - From the directory containing `app.py`, run:
      ```bash
@@ -103,12 +106,13 @@ The service is a **FastAPI** application in `app.py` with five endpoints:
 | **GET**  | `/anomalies/summary` | Aggregates `_summary.json` files for a high-level view: total rows scored, total anomalies, and overall anomaly rate across batches. |
 | **GET**  | `/baseline/current` | Returns the current per-channel statistics (mean, std, observation count, baseline maturity). |
 | **GET**  | `/health` | Liveness check to confirm the service started correctly. |
+| **GET**  | `/docs` | Auto-generated documentation for your API that describes all the endpoints. |
 
 ---
 
 ## Logging
 
-- Implement **logging to a local file**.
+- Implement **logging of your FastAPI to a local file**.
 - **Sync a copy of that log file to your S3 bucket** whenever your application pushes `baseline.json`.
 - Log important events, for example:
   - Arrival of a new file
@@ -136,7 +140,6 @@ You should then copy two files from your bucket to your forked repository
 
 ## Summary of Deliverables
 
-
 ### All Students
 
 - **CloudFormation template** that builds the full solution (EC2, security group, Elastic IP, S3 bucket, IAM role, SNS topic `ds5220-dp1`, SNS HTTP subscription to `http://<Elastic-IP>:8000/notify`, S3 event on `raw/*.csv` → SNS). This file should be saved to the `submit/` folder of your forked repository.
@@ -144,13 +147,12 @@ You should then copy two files from your bucket to your forked repository
 - A copy of your full log file should be saved to the same directory.
 - Submit the URL to your fork of the `anomaly-detection` repo in Canvas.
 
-
 ### Graduate Students
 
 In addition to the above requirements:
 
-- A complete working template of this solution written in Terraform. Add this to the `submit/` directory of your fork.
-- You should run your solution to be sure it is in good working order, but you do not need to submit additional baseline or log files.
+- Write a complete working template of this solution in Terraform. Add this to the `submit/` directory of your fork.
+- You should test your solution to be sure it is in good working order, but you do not need to submit additional baseline or log files.
 - Submit your answers to the following questions in a markdown or PDF file in the same folder of your forked repository.
 
 **Questions**
