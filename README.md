@@ -214,7 +214,7 @@ Or using the CLI you can verify. The `SubscriptionArn` attribute with either hav
 aws sns list-subscriptions-by-topic --topic-arn "arn:aws:sns:us-east-1:440848399208:ds5220-dp1"
 ```
 
-## Custom AMI
+### Custom AMI
 
 Thinking about building your own custom AMI with all dependencies and then using that to launch your stack?
 
