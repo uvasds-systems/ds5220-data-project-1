@@ -21,9 +21,10 @@ You must create a **CloudFormation template** that provisions the entire solutio
 - **Instance type:** `t3.micro`
 - **Boot volume:** 16 GB
 - **User data / bootstrap:** Install and configure the application so that:
-  - The necessary Python libraries (from the repo’s `requirements.txt`) are installed
-  - The global environment variable `BUCKET_NAME` is set (e.g., in `/etc/environment`) to the name of the S3 bucket created by this stack
-  - A command is in place to run the FastAPI API (e.g., `fastapi run app.py` or equivalent) so the service starts on boot or via a process manager
+  - The necessary Python libraries (from the repo’s `requirements.txt`) are installed within a virtual environment (see Notes below).
+  - It pulls down a copy of your fork into the instance.
+  - The global environment variable `BUCKET_NAME` is set (e.g., in `/etc/environment`) to the name of the S3 bucket created by this stack.
+  - A command is in place to run the FastAPI API (e.g., `fastapi run app.py` or equivalent) so the service starts on boot or via a process manager.
 
 ### Security group
 - Allow **port 22** (SSH) from anywhere (`0.0.0.0/0`)
@@ -53,9 +54,9 @@ You must create a **CloudFormation template** that provisions the entire solutio
   - **Suffix:** `*.csv` (or equivalent filter for CSV objects in `raw/`)
   - **Destination:** Publish each event to the **SNS topic** `ds5220-dp1`
 
-When a CSV file is uploaded to the bucket under `raw/`, S3 notifies SNS, and SNS sends an HTTP request to `http://<Elastic-IP>:8000/notify`, which the FastAPI app uses to trigger processing.
+When a CSV file is uploaded to the bucket under `raw/`, S3 notifies SNS, and SNS sends an HTTP request to `http://<Elastic-IP>:8000/notify`, which FastAPI uses to trigger processing.
 
-You may want/need to build and destroy some instances along the way for testing purposes.
+You may want/need to build and destroy some instances along the way for testing purposes. This is normal.
 
 ---
 
@@ -165,6 +166,8 @@ In addition to the above requirements:
 
 - - -
 
+## Reference 
+
 For full working code and file listings, see: [https://github.com/uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection).
 
 For a complete **CloudFormation** reference, see: [https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/introduction.html](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/introduction.html)
@@ -172,9 +175,11 @@ For a complete **CloudFormation** reference, see: [https://docs.aws.amazon.com/A
 For a complete **Terraform** reference, see: [https://developer.hashicorp.com/terraform/docs](https://developer.hashicorp.com/terraform/docs)
 
 
-## Comments/Notes
+## Notes
 
 ### Bootstrapping with Virtual Environments
+
+I would recommend using either `venv` or `pipenv`.
 
 ```
 #!/bin/bash
@@ -208,5 +213,11 @@ Or using the CLI you can verify. The `SubscriptionArn` attribute with either hav
 
 ```
 # Be sure to replace the ARN with your own:
-aws sns list-subscriptions-by-topic --topic-arn "arn:aws:sns:us-east-1:440848399208:ds5220"
+aws sns list-subscriptions-by-topic --topic-arn "arn:aws:sns:us-east-1:440848399208:ds5220-dp1"
 ```
+
+## Custom AMI
+
+Thinking about building your own custom AMI with all dependencies and then using that to launch your stack?
+
+**Go for it!** Please note that you are doing so with inline comments in your template.
