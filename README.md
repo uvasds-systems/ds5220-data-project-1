@@ -69,7 +69,6 @@ aws s3 rm s3://YOUR-BUCKET/ --recursive --dry-run
 aws s3 rm s3://YOUR-BUCKET/ --recursive
 
 ```
-
 ---
 
 ## Setup
@@ -136,18 +135,20 @@ This keeps a single application log file backed up from the EC2 instance to S3.
 
 ---
 
-## Testing
+## Publish Test Data to Your Bucket
 
 - A test script **`test_producer.py`** is provided. Run it on your laptop or from another SSH session on your instance (it has its own dependencies).
 - It produces a CSV with 100 records every 60 seconds and uploads them to your S3 bucket under a `raw/` folder.
-- A sample file is available in the repository for reference.
+- A [sample data file](https://github.com/uvasds-systems/anomaly-detection/blob/main/sensors_20260224T001051.csv) is available in the repository for reference.
 
 Once you have successfully tested your solution to a working state, let it run unattended for 60 minutes.
 
-You should then copy two files from your bucket to your forked repository
+You should then stop the script and copy two files from your bucket into your forked repository
 
 1. A copy of your full log file should be saved to the `submit/` directory of your fork.
 2. A copy of your final baseline file (found in `s3://YOUR_BUCKET/state/baseline.json`) should be saved in the same location.
+
+Add, commit, and push those files to your fork.
 
 ---
 
