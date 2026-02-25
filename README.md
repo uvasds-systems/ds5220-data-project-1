@@ -268,6 +268,14 @@ Thinking about building your own custom machine image with all dependencies and 
 Also bootstrap accordingly so that an "updated" FastAPI repository gets pulled into
 any new instance(s).
 
+
+### BEWARE of Recursion!
+
+Be sure that your S3 event notification is ONLY scoped to the `raw/` subfolder (the prefix)
+and is triggered only on the arrival of `*.csv` files (the suffix). Otherwise, when the 
+scored version of each CSV file is generated and pushed to the bucket, the notification is
+triggered again and again. This could spawn an endless spiral of meaningless files in your bucket.
+
 ### Use of GenAI / LLMs / AI-assisted IDEs
 
 Can I use an AI tool with this project? **Yes you may**.
