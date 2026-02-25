@@ -122,6 +122,16 @@ The service is a **FastAPI** application in `app.py` with five endpoints:
 
 ---
 
+## Error Handling
+
+Implement error handling within the application as appropriate. Use `try`/`except` stanzas
+and print errors to both the screen and your logfile.
+
+Place error logic appropriately where requests or transactions are most likely to experience
+failures or issues.
+
+---
+
 ## Logging
 
 - Implement **logging of your FastAPI to a local file**.
