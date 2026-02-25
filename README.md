@@ -1,6 +1,8 @@
 # DS5220 Data Project 1
 
-**All code for this project can be found in:** [https://github.com/uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection)
+**All application code for this project can be found in:** [https://github.com/uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection)
+
+[**Create a Fork**](https://github.com/uvasds-systems/anomaly-detection/fork)
 
 ---
 
@@ -29,7 +31,7 @@ You must create a **CloudFormation template** that provisions the entire solutio
 - **Boot volume:** 16 GB
 - **User data / bootstrap:** Install and configure the application so that:
   - The necessary Python libraries (from the repo’s `requirements.txt`) are installed within a virtual environment (see Notes below).
-  - It pulls a copy of your `anomaly-detection` app into the instance.
+  - It pulls a copy of your forked `anomaly-detection` app into the instance.
   - The global environment variable `BUCKET_NAME` is set (e.g., in `/etc/environment`) to the name of the S3 bucket created by this stack.
   - A final command to run the FastAPI API (e.g., `fastapi run app.py` or equivalent) so the service starts on boot or via a process manager.
 
