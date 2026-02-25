@@ -1,11 +1,5 @@
 # DS5220 Data Project 1
 
-**All application code for this project can be found in:** [https://github.com/uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection)
-
-[**Create a Fork**](https://github.com/uvasds-systems/anomaly-detection/fork)
-
----
-
 ## Overview
 
 This project implements an **event-driven anomaly detection flow** on time series data. When a new batch of observations arrives (e.g., IoT sensor readings, server metrics, weather station data), the system runs an anomaly detection pass using scikit-learn’s **IsolationForest**, then writes back a scored version of the file where each row is annotated with an anomaly flag and a score.
@@ -83,7 +77,7 @@ aws s3 rm s3://YOUR-BUCKET/ --recursive
 ## Setup
 
 1. **Fork the repository**  
-   Fork [uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection) so you have your own copy to work with. Get your code in a working state that is ready to deploy.
+   Fork [uvasds-systems/anomaly-detection](https://github.com/uvasds-systems/anomaly-detection) so you have your own copy of the python application to work with. Get your code in a working state with (error handling and logging) that is ready to deploy. [**Create a Fork**](https://github.com/uvasds-systems/anomaly-detection/fork).
 
 2. **Launch your Resources**
    Create a stack with all the resources described above, connecting resources where required, i.e. associate the EIP with your instance, connect your S3 bucket's event triggers with the SNS topic, etc.
