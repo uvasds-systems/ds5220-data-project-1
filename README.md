@@ -152,9 +152,9 @@ You should then copy two files from your bucket to your forked repository
 
 In addition to the above requirements:
 
-- Write a complete working template of this solution in Terraform. Add this to the `submit/` directory of your fork.
+- Write a complete working template of this solution in **Terraform**. Add this to the `submit/` directory of your fork.
 - You should test your solution to be sure it is in good working order, but you do not need to submit additional baseline or log files.
-- Submit your answers to the following questions in a markdown or PDF file in the same folder of your forked repository.
+- Submit your **answers to the following questions** in a markdown or PDF file in the same folder of your forked repository.
 
 **Questions**
 
