@@ -200,7 +200,7 @@ In addition to the above requirements:
 ## Cleanup
 
 After running your stack and application, and after gathering the material for submission,
-you can delete your stack using the appropriate method for CloudFormation or Terraform.
+delete your stack using the appropriate method for CloudFormation or Terraform.
 
 Note that your S3 bucket will not be deleted by either method since it contains objects.
 Keep these for future reference.
@@ -248,7 +248,8 @@ Your API uses the `/notify` endpoint for SNS subscriptions. If you look at the c
 
 However, you should check in the web console or using the CLI to verify the subscription is confirmed. If your API is up and running, go to your topic in the SNS service, and review the subscription. If necessary, select it using the radio button on the left and click "Request Confirmation" to try again.
 
-Or using the CLI you can verify. The `SubscriptionArn` attribute with either have a full ARN or a `Pending` status:
+Using the CLI you can verify a confirmed subscription. The `SubscriptionArn` attribute 
+with either have a full ARN or a `Pending` status:
 
 ```
 # Be sure to replace the ARN with your own:
