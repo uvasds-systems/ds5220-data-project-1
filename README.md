@@ -284,8 +284,7 @@ $ aws sns list-subscriptions-by-topic --topic-arn "arn:aws:sns:us-east-1:4408483
 Thinking about building your own custom machine image with all dependencies and then using that to launch your stack?
 
 **Go for it!** Please note that you are doing so with inline comments in your template.
-Also bootstrap accordingly so that an "updated" FastAPI repository gets pulled into
-any new instance(s).
+Even with a custom AMI, be sure to bootstrap accordingly so that an "updated" FastAPI repository gets pulled into any new instance(s).
 
 
 ### BEWARE of Recursion!
@@ -307,5 +306,4 @@ output is likely to be more useful than not.
 
 Therefore I encourage the use of these tools, but it is clearly up to you to give
 guidance and to *thoroughly* test any results. I would suggest writing your own
-stub of a template and then working on individual blocks with Codex, Cursor, etc.
-and then testing repeatedly for a complete, working solution.
+stub of a template that (in comments) itemizes each resource and describes their features, and then working on individual blocks with Codex, Cursor, etc. Be prepared to test repeatedly for a complete, working solution.
