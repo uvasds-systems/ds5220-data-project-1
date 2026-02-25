@@ -177,7 +177,8 @@ In addition to the above requirements:
 
 ### Bootstrapping with Virtual Environments
 
-I would recommend using either `venv` or `pipenv`.
+I would recommend using either `venv` or `pipenv`. The snippet below could be a portion
+of your bootstrapping:
 
 ```
 #!/bin/bash
@@ -187,9 +188,7 @@ set -e
 apt-get update -y
 apt-get install -y git python3 python3-pip python3-venv git
 
-cd /opt
-git clone https://github.com/YOUR-ACCOUNT/anomaly-detection.git
-cd anomaly-detection
+# clone and cd
 # Create a virtualenv in a known location
 python3 -m venv /opt/anomaly-detection/venv
 
@@ -199,6 +198,7 @@ source /opt/anomaly-detection/venv/bin/activate
 
 # The app.py FastAPI app can be run using full paths if necessary, even from outside the virtualenv:
 /opt/anomaly-detection/venv/bin/fastapi run /opt/anomaly-detection/app.py --reload
+
 ```
 
 ### SNS Subscription Confirmation
@@ -216,9 +216,11 @@ aws sns list-subscriptions-by-topic --topic-arn "arn:aws:sns:us-east-1:440848399
 
 ### Custom AMI
 
-Thinking about building your own custom AMI with all dependencies and then using that to launch your stack?
+Thinking about building your own custom machine image with all dependencies and then using that to launch your stack?
 
 **Go for it!** Please note that you are doing so with inline comments in your template.
+Also bootstrap accordingly so that an "updated" FastAPI repository gets pulled into
+any new instance(s).
 
 ### Use of GenAI / LLMs / AI-assisted IDEs
 
