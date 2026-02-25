@@ -32,11 +32,11 @@ You must create a **CloudFormation template** that provisions the entire solutio
 - **User data / bootstrap:** Install and configure the application so that:
   - The necessary Python libraries (from the repo’s `requirements.txt`) are installed within a virtual environment (see Notes below).
   - It pulls a copy of your forked `anomaly-detection` app into the instance.
-  - The global environment variable `BUCKET_NAME` is set (e.g., in `/etc/environment`) to the name of the S3 bucket created by this stack.
+  - The environment variable `BUCKET_NAME` is set. This should be done in two ways: as an `export` command in the bootstrapping (e.g. `export BUCKET_NAME='my-bucket'`) as well as set as a global environment variable to be set upon future reboots or logins (e.g., by setting `BUCKET_NAME='my-bucket'` in `/etc/environment`). The value of this variable should be the name of the S3 bucket created by your stack. See [this example](https://github.com/uvasds-systems/ds5220-cloud/blob/347a4dc436096826c172f1b258a541b90a389455/reference-iac/cloudformation/0-BASE-ec2-instance.yaml#L55) where the `!Sub` feature in the `UserData` allows you to call other stack variables with `!Ref SomeResourceName`.
   - A final command to run the FastAPI API (e.g., `fastapi run app.py` or equivalent) so the service starts on boot or via a process manager.
 
 ### Security group
-- Allow **port 22** (SSH) from anywhere (`0.0.0.0/0`)
+- Allow **port 22** (SSH) from YOUR specific IP address, e.g. (`1.2.3.4/32`)
 - Allow **port 8000** (API) from anywhere (`0.0.0.0/0`)
 - Attach this security group to the EC2 instance
 
@@ -89,7 +89,7 @@ aws s3 rm s3://YOUR-BUCKET/ --recursive
    Create a stack with all the resources described above, connecting resources where required, i.e. associate the EIP with your instance, connect your S3 bucket's event triggers with the SNS topic, etc.
 
 3. **Bootstrap the instance**  
-   Within the template, bootstrap your instance with any required software and configuration. Ensure that `BUCKET_NAME` is set as a global environment variable (e.g., add `KEY="VALUE"` to `/etc/environment`). The application requires an S3 bucket and an IAM role with read/write access to that bucket; it will not run without them. Bootstrapping should also include pulling down a copy of your forked code.
+   Within the template, bootstrap your instance with any required software and configuration. Ensure that `BUCKET_NAME` is set as a global environment variable (e.g., add `KEY="VALUE"` to `/etc/environment`) for subsequent logins and reboots, but also `export` is explicitly within bootstrapping (e.g. `export BUCKET_NAME='my-bucket'`). The application requires an S3 bucket and an IAM role with read/write access to that bucket; it will not run without them. Bootstrapping should also include pulling down a copy of your forked code.
 
 4. **Python environment**  
    - Create and activate a virtual environment (`virtualenv`, `pipenv`, etc.) for your code to run properly.
