@@ -27,9 +27,9 @@ You must create a **CloudFormation template** that provisions the entire solutio
 - **Boot volume:** 16 GB
 - **User data / bootstrap:** Install and configure the application so that:
   - The necessary Python libraries (from the repo’s `requirements.txt`) are installed within a virtual environment (see Notes below).
-  - It pulls down a copy of your fork into the instance.
+  - It pulls a copy of your `anomaly-detection` app into the instance.
   - The global environment variable `BUCKET_NAME` is set (e.g., in `/etc/environment`) to the name of the S3 bucket created by this stack.
-  - A command is in place to run the FastAPI API (e.g., `fastapi run app.py` or equivalent) so the service starts on boot or via a process manager.
+  - A final command to run the FastAPI API (e.g., `fastapi run app.py` or equivalent) so the service starts on boot or via a process manager.
 
 ### Security group
 - Allow **port 22** (SSH) from anywhere (`0.0.0.0/0`)
@@ -90,9 +90,10 @@ aws s3 rm s3://YOUR-BUCKET/ --recursive
 4. **Python environment**  
    - Create and activate a virtual environment (`virtualenv`, `pipenv`, etc.) for your code to run properly.
    - Install dependencies from `requirements.txt`.
-   - From the directory containing `app.py`, run:
+   - From within the directory containing `app.py`, run:
      ```bash
-     fastapi run app.py --reload
+     # or provide full paths to both fastapi and app.py
+     fastapi run app.py
      ```
    The API will be available at `http://YOUR-EC2-IP-ADDRESS:8000/`.
 
@@ -147,6 +148,8 @@ failures or issues.
   - Baseline updates
 
 This keeps a single application log file backed up from the EC2 instance to S3.
+
+With error handling and logging in place, add/commit/push all changes back to your fork.
 
 ---
 
