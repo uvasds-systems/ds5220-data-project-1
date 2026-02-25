@@ -257,7 +257,26 @@ with either have a full ARN or a `Pending` status:
 
 ```
 # Be sure to replace the ARN with your own:
-aws sns list-subscriptions-by-topic --topic-arn "arn:aws:sns:us-east-1:440848399208:ds5220-dp1"
+$ aws sns list-subscriptions-by-topic --topic-arn "arn:aws:sns:us-east-1:440848399208:ds5220-dp1"
+
+{
+    "Subscriptions": [
+        {
+            "SubscriptionArn": "arn:aws:sns:us-east-1:440848399208:ds5220-dp1:045ce4c3-6431-430c-88fe-c2b66f21aa34",
+            "Owner": "440848399208",
+            "Protocol": "http",
+            "Endpoint": "http://13.222.90.189:8000/notify",
+            "TopicArn": "arn:aws:sns:us-east-1:440848399208:ds5220"
+        },
+        {
+            "SubscriptionArn": "PendingConfirmation",
+            "Owner": "440848399208",
+            "Protocol": "http",
+            "Endpoint": "http://34.233.126.83:8000/notify",
+            "TopicArn": "arn:aws:sns:us-east-1:440848399208:ds5220"
+        }
+    ]
+}
 ```
 
 ### Custom AMI
