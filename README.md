@@ -177,7 +177,17 @@ In addition to the above requirements:
 4. **IAM and least privilege:** The IAM policy for the EC2 instance grants full access to one S3 bucket. List the specific S3 operations the application actually performs (e.g., GetObject, PutObject, ListBucket). Could you replace the “full access” policy with a minimal set of permissions that still allows the app to work? What would that policy look like?
 5. **Architecture and scaling:** This solution uses batch-file events (S3 + SNS) to drive processing, with a rolling statistical baseline in memory and in S3. How would the design change if you needed to handle 100x more CSV files per hour, or if multiple EC2 instances were processing files from the same bucket? Address consistency of the shared `baseline.json`, concurrent processing, and any tradeoffs.
 
-- - -
+---
+
+## Cleanup
+
+After running your stack and application, and after gathering the material for submission,
+you can delete your stack using the appropriate method for CloudFormation or Terraform.
+
+Note that your S3 bucket will not be deleted by either method since it contains objects.
+Keep these for future reference.
+
+---
 
 ## Reference 
 
