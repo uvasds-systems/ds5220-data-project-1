@@ -58,6 +58,18 @@ When a CSV file is uploaded to the bucket under `raw/`, S3 notifies SNS, and SNS
 
 You may want/need to build and destroy some instances along the way for testing purposes. This is normal.
 
+Be sure to clear your bucket of all objects after testing, before you perform your full
+60 minute run. This can be done in one command:
+
+```
+# show which files would be deleted
+aws s3 rm s3://YOUR-BUCKET/ --recursive --dry-run
+
+# then the actual deletion
+aws s3 rm s3://YOUR-BUCKET/ --recursive
+
+```
+
 ---
 
 ## Setup
