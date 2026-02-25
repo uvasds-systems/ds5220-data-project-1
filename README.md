@@ -10,6 +10,11 @@ This project implements an **event-driven anomaly detection flow** on time serie
 
 The instance maintains a **running statistical baseline** in S3 (a small JSON file, `baseline.json`, tracking rolling mean and standard deviation per sensor/channel), which it updates with each new batch. Detection improves over time through adaptive statistics without retraining, simulating stateful stream-like processing over batch files.
 
+Your developers have already created working code for this project (though it needs
+both error handling and logging implemented), so your primary task in this project is
+to define a resource stack in CloudFormation that will enable other users in your org
+to launch identical solutions in the future.
+
 ---
 
 ## CloudFormation Template
