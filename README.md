@@ -244,9 +244,9 @@ source /opt/anomaly-detection/venv/bin/activate
 
 ### SNS Subscription Confirmation
 
-Your API uses the `/notify` endpoint for SNS subscriptions. If you look at the code in `app.py` you will see that `SubscriptionConfirmation` messages get confirmed automatically.
+Your API uses the `/notify` endpoint for SNS subscriptions. If you [look at the code](https://github.com/uvasds-systems/anomaly-detection/blob/c485eb56fdfb1ed652681daf597cfa5506fc9856/app.py#L25) in `app.py` you will see that `SubscriptionConfirmation` messages get confirmed automatically.
 
-However, you should check in the web console or using the CLI to verify the subscription is confirmed. If your API is up and running, go to your topic in the SNS service, and review the subscription. If necessary, select it using the radio button on the left and click "Request Confirmation" to try again.
+However, you should check in the web console or using the CLI to verify the subscription has been confirmed. If your API is up and running, go to your topic in the SNS service, and review the subscription. If necessary, select it using the radio button on the left and click "Request Confirmation" to try again.
 
 Using the CLI you can verify a confirmed subscription. The `SubscriptionArn` attribute 
 with either have a full ARN or a `Pending` status:
