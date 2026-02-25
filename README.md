@@ -15,6 +15,8 @@ both error handling and logging implemented), so your primary task in this proje
 to define a resource stack in CloudFormation that will enable other users in your org
 to launch identical solutions in the future.
 
+![Solution Diagram](https://s3.amazonaws.com/uvasds-systems/images/diagram.png)
+
 ---
 
 ## CloudFormation Template
